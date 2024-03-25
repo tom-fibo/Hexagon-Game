@@ -96,7 +96,7 @@ firebase.auth().onAuthStateChanged((user) => {
 })
 function toggleQueue() {
   playerData.queue = !playerData.queue;
-  if (playerData.displayName == "") {
+  if (!playerData.displayName) {
     playerData.displayName = prompt("Set Display Name");
   }
   playerRef.set(playerData);
