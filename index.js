@@ -2,7 +2,7 @@ console.clear();
 var playerData = {
       id: "",
       queue: false,
-      displayName: prompt("Set Display Name"),
+      displayName: "",
       opponent: "",
       lastMove: []
     };
@@ -96,6 +96,9 @@ firebase.auth().onAuthStateChanged((user) => {
 })
 function toggleQueue() {
   playerData.queue = !playerData.queue;
+  if (playerData.displayName == "") {
+    playerData.displayName = prompt("Set Display Name");
+  }
   playerRef.set(playerData);
   var toggleQueue = document.getElementById("toggleQueue");
   if (playerData.queue) {
