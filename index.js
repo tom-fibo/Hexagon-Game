@@ -2,7 +2,7 @@ console.clear();
 var playerData = {
       id: "",
       queue: false,
-      displayName: /*prompt("Set Display Name")*/"Temp Name",
+      displayName: prompt("Set Display Name"),
       opponent: "",
       lastMove: []
     };
