@@ -357,7 +357,7 @@ canvas.addEventListener('click', e => {
       checkForWin(clickPos, color==2 ? "Blue":"Red");
       playerData.lastMove.push([clickPos[0],clickPos[1]]);
       turn = (turn%4) + 1;
-      if (turn % 2 == 1) {
+      if (winner > 0 || turn % 2 == 1) {
         playerRef.set(playerData);
         playerData.lastMove = [];
       }
