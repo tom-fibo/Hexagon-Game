@@ -360,6 +360,7 @@ canvas.addEventListener('click', e => {
       if (winner > 0 || turn % 2 == 1) {
         playerRef.set(playerData);
         playerData.lastMove = [];
+        highlightLocs = [];
       }
       draw();
     }
