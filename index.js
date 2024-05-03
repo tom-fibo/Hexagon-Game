@@ -109,6 +109,7 @@ function toggleQueue() {
 }
 function addQueueElement(snapshot) {
   var tr = document.createElement("tr");
+  tr.classList.add("queuerow");
   tr.setAttribute("id", snapshot.id);
   tr.innerHTML = "<th>"+snapshot.displayName+"</th><th>" + (snapshot.id == playerId ? "" : "<button onClick=joinGame('"+snapshot.id+"')>Join</button>")+"</th>";
   queue.appendChild(tr);
@@ -121,8 +122,8 @@ function joinGame(opponent) {
   startGame(opponent);
 }
 function startGame(opponent) {
-  document.getElementById("toggleQueue").style.display = "none";
-  queue.style.display = "none";
+  document.getElementById("toggleQueue").hidden = true;
+  queue.hidden = true;
   opponentId = opponent;
   board = [ //hex width = 100, hex height = 25sqrt(3)
     [0,0,0,0,0],
@@ -155,6 +156,7 @@ function canvasToBoard(canvasX, canvasY) {
   return [y,x];
 }
 function draw() {
+  canvas.hidden = false;
   ctx.fillStyle="rgb(255,255,255)";
   ctx.fillRect(0,0,700,700);
   var startLoc = canvasToBoard(-hexSide,-350-hexSide);
@@ -234,6 +236,7 @@ function draw() {
       }
     }
   }
+  turnText.removeAttribute("hidden");
   if (winner === 0) {
     turnText.innerHTML = ((((color==1)==(turn>=3)) ? "Their":"Your")+" turn ("+(turn%2+1)+" left)");
     turnText.style.backgroundColor = (turn>=3 ? "#9fcfff":"#ff9f9f");
