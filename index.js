@@ -57,19 +57,13 @@ firebase.auth().onAuthStateChanged((user) => {
         }
       } else if (opponentId == snapshot.id) {
         var lastMove = snapshot.lastMove;
-        if (lastMove && lastMove.length > 0 && (board.length < lastMove[0][0] || board[0].length < lastMove[0][1] || board[lastMove[0][0]][lastMove[0][1]] == 0)) {
+        if (lastMove && lastMove.length > 0 && lastMove.length <= 2) {
           for (var i=0; i<lastMove.length; i++) {
-            if (lastMove[i][1] > board[0].length) {
-              var diff = lastMove[i][1] - board[0].length;
-              for (var j=0; j<board.length; j++) {
-                board[j].push(...Array(diff).fill(0));
-              }
+            extendBoard(lastMove[i]);
+            if (board[lastMove[i][0]][lastMove[i][1]] == 0) {
+              board[lastMove[i][0]][lastMove[i][1]] = 3 - color;
+              checkForWin(lastMove[i], color==1 ? "Blue":"Red");
             }
-            while (lastMove[i][0] > board.length-1) {
-              board.push(Array(board[0].length).fill(0));
-            }
-            board[lastMove[i][0]][lastMove[i][1]] = 3 - color;
-            checkForWin(lastMove[i], color==1 ? "Blue":"Red");
             turn = (turn%4)+1;
           }
           highlightLocs = lastMove;
@@ -139,8 +133,8 @@ function startGame(opponent) {
   hexSide = 48;
   redSpots = [];
   blueSpots = [];
-  scrollX = 1000;
-  scrollY = 2000;
+  scrollX = 2000;
+  scrollY = 4000;
   draw();
 }
 function getCanvasLocation(pos) {
@@ -155,23 +149,26 @@ function canvasToBoard(canvasX, canvasY) {
   var y = Math.round(((canvasY-300+scrollY)/(hexSide*Math.sqrt(3)/2)-x)/2);
   return [y,x];
 }
+function extendBoard(loc) {
+  if (loc[1] > board[0].length) {
+    var diff = loc[1] - board[0].length;
+    for (var i=0; i<board.length; i++) {
+      board[i].push(...Array(diff).fill(0));
+    }
+  }
+  if (loc[0] > board.length) {
+    while (loc[0] > board.length) {
+      board.push(Array(board[0].length).fill(0));
+    }
+  }
+}
 function draw() {
   canvas.hidden = false;
   ctx.fillStyle="rgb(255,255,255)";
   ctx.fillRect(0,0,700,700);
   var startLoc = canvasToBoard(-hexSide,-350-hexSide);
   var endLoc = [Math.ceil(startLoc[0]+(600/hexSide)), Math.ceil(startLoc[1]+(600/hexSide))];
-  if (endLoc[1] > board[0].length) {
-    var diff = endLoc[1] - board[0].length;
-    for (var i=0; i<board.length; i++) {
-      board[i].push(...Array(diff).fill(0));
-    }
-  }
-  if (endLoc[0] > board.length) {
-    while (endLoc[0] > board.length) {
-      board.push(Array(board[0].length).fill(0));
-    }
-  }
+  extendBoard(endLoc)
   for (var i=startLoc[0]; i<endLoc[0]; i++) {
     for (var j=startLoc[1]; j<endLoc[1]; j++) {
       if (i>=0&&j>=0&&board[i][j] >= 0) {
@@ -238,7 +235,7 @@ function draw() {
   }
   turnText.removeAttribute("hidden");
   if (winner === 0) {
-    turnText.innerHTML = ((((color==1)==(turn>=3)) ? "Their":"Your")+" turn ("+(turn%2+1)+" left)");
+    turnText.innerHTML = ((((color==1)==(turn>=3)) ? "Opponent's":"Your")+" turn ("+(turn%2+1)+" left)");
     turnText.style.backgroundColor = (turn>=3 ? "#9fcfff":"#ff9f9f");
   } else {
     turnText.innerHTML = (winner==color ? "You win!":"You lose.");
@@ -324,28 +321,33 @@ function checkForWin(pos, curTurn) {
   }
 }
 document.addEventListener('keydown', e => {
-  e.preventDefault();
   if (opponentId) {
     if (e.code === "KeyW" || e.code === "ArrowUp") {
       scrollY -= 10;
+      e.preventDefault();
     } else if (e.code === "KeyS" || e.code === "ArrowDown") {
       scrollY += 10;
+      e.preventDefault();
     } else if (e.code === "KeyA" || e.code === "ArrowLeft") {
       scrollX -= 10;
+      e.preventDefault();
     } else if (e.code === "KeyD" || e.code === "ArrowRight") {
       scrollX += 10;
+      e.preventDefault();
     } else if (e.code === "KeyQ") {
       if (hexSide > 10) {
         hexSide /= 1.5;
         scrollX /= 1.5;
         scrollY /= 1.5;
       }
+      e.preventDefault();
     } else if (e.code === "KeyE") {
       if (hexSide < 60) {
         hexSide *= 1.5;
         scrollX *= 1.5;
         scrollY *= 1.5;
       }
+      e.preventDefault();
     }
     draw();
   }
